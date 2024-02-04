@@ -2,6 +2,16 @@ import requests
 import csv
 from xml.dom.minidom import parseString
 
+retrieveTags = ['TrainStatus',
+                'TrainLatitude',
+                'TrainLongitude',
+                'TrainCode',
+                'TrainDate',
+                'PublicMessage',
+                'Direction'
+                ]
+
+
 url = "http://api.irishrail.ie/realtime/realtime.asmx/getCurrentTrainsXML"
 page = requests.get(url)
 
@@ -17,12 +27,16 @@ doc = parseString(page.content)
 dataList = []
 
 objTrainPositionsNodes = doc.getElementsByTagName("objTrainPositions")
-for objTrainPositionsNode in objTrainPositionsNodes:
-    traincodenode = objTrainPositionsNode.getElementsByTagName(
-        "TrainCode").item(0)
-    traincode = traincodenode.firstChild.nodeValue.strip()
-    dataList.append(traincode)
 
+# get and check trainCode start with
+for objTrainPositionsNode in objTrainPositionsNodes:
+    datanode = objTrainPositionsNode.getElementsByTagName(
+        retrieveTags[3]).item(0)
+    checkStartSymbol = datanode.firstChild.nodeValue.strip()
+    if checkStartSymbol.startswith('D'):
+        dataList.append(datanode.firstChild.nodeValue.strip())
+
+# write data in file cvs
 with open('Lab2_Trains\week03_train.csv', mode='w', newline='') as train_file:
     train_writer = csv.writer(
         train_file, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
