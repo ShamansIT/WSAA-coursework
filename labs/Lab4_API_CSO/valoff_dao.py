@@ -23,5 +23,5 @@ def getAll():
 
 
 if __name__ == "__main__":
-    with open("labs\Lab4\\valloff.json", "wt") as fp:
+    with open("labs\Lab4_API_CSO\\valloff.json", "wt") as fp:
         print(json.dumps(getAll()), file=fp)
