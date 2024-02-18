@@ -12,4 +12,4 @@ for entery in data:
             totalArea += valuationReport['Area']
             print('{0:.2f}'.format(totalArea))
 
-print(totalArea)
+print('{0:.2f}'.format(totalArea))
