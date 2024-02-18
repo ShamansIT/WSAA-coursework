@@ -1,5 +1,4 @@
 import requests
-import json
 
 url = "http://andrewbeatty1.pythonanywhere.com/books"
 
@@ -17,7 +16,13 @@ def getBookById(id):
 
 def createBook(book):
     response = requests.post(url, json=book)
-    return response.json()
+
+    if response.status_code == 201:   # Check Created Status
+        return response.json()
+    elif response.status_code == 400:  # Check Bad Request Status
+        return {'error': 'Invalid book data provided'}
+    else:
+        response.raise_for_status()  # Raise an exception for other errors
 
 
 def updateBook(id, bookdiff):
@@ -30,6 +35,18 @@ def deleteBook(id):
     deleteUrl = url + "/" + str(id)
     response = requests.delete(deleteUrl)
     return response.json()
+
+
+def readBooks(id):
+    geturl = url + "/" + str(id)
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        return response.json()  # Return the JSON data if successful
+    elif response.status_code == 404:
+        return {'error': 'Book not found'}  # Handle not found error
+    else:
+        response.raise_for_status()  # Raise an exception for other error
 
 
 if __name__ == "__main__":
@@ -47,3 +64,4 @@ if __name__ == "__main__":
         'Price': 10000000
     }
     # print(updateBook(1,bookUpdateData))
+    print(readBooks())
