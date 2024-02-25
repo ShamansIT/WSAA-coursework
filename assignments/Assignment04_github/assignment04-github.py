@@ -1,42 +1,28 @@
-from git import Repo
-import os
+from github import Github
+from config import token
 
 # Constants
-REPO_PATH = 'https://github.com/ShamansIT/WSAA-coursework/tree/main/assignments/Assignment04_github'
-FILE_PATH = 'https://github.com/ShamansIT/WSAA-coursework/tree/main/assignments/Assignment04_github/file.txt'
+ACCESS_TOKEN = token
+REPO_NAME = 'https://api.github.com/repos/ShamansIT/WSAA-coursework'
+FILE_PATH = 'assignments/Assignment04_github/file.txt'
+OLD_NAME = 'Andrew'
 NEW_NAME = 'Serhii'
 
-# Repository path check
-if not os.path.isdir(REPO_PATH):
-    print("Repository path does not exist.")
-else:
-    # Initialize the repository object
-    repo = Repo(REPO_PATH)
+# Initialize PyGithub with your access token
+g = Github(token)
 
-    # Ensure not working with a dirty repo
-    if repo.is_dirty():
-        print("The repository has uncommitted changes. Please commit or stash them before running this script.")
-    else:
-        # Full path to the target file
-        target_file_path = os.path.join(REPO_PATH, FILE_PATH)
+# Get the repository
+repo = g.get_repo(REPO_NAME)
 
-        # Read the file, replace "Andrew" with "Serhii", and write the changes
-        if os.path.exists(target_file_path):
-            with open(target_file_path, 'r', encoding='utf-8') as file:
-                content = file.read()
+# Get the file
+file_contents = repo.get_contents(FILE_PATH)
 
-            updated_content = content.replace("Andrew", NEW_NAME)
+# Decode the file contents and replace the old name with the new name
+decoded_content = file_contents.decoded_content.decode('utf-8')
+updated_content = decoded_content.replace(OLD_NAME, NEW_NAME)
 
-            with open(target_file_path, 'w', encoding='utf-8') as file:
-                file.write(updated_content)
+# Commit the changes back to GitHub
+repo.update_file(FILE_PATH, "Replace 'Andrew' with 'Serhii'",
+                 updated_content, file_contents.sha)
 
-            # Using GitPython to commit the changes
-            try:
-                repo.git.add(FILE_PATH)
-                repo.git.commit('-m', 'Replace "Andrew" with "Serhii"')
-                repo.git.push()
-                print("Changes have been pushed successfully.")
-            except Exception as e:
-                print(f"An error occurred while trying to push changes: {e}")
-        else:
-            print(f"File does not exist at {target_file_path}")
+print(f"Updated file {FILE_PATH} in repository {REPO_NAME}")
