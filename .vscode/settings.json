@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./assignments/Assignment04_github/assignment04-",
+        "./assignments/Assignment04_github/assignment04-"
+    ]
+}
